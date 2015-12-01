@@ -326,12 +326,14 @@
                 this.ranges[rangeHtml] = [start, end];
             }
 
-            var list = '<ul>';
+            var list = options.rangesUl ? $(options.rangesUl) : $('<ul></ul>');
+            var liTemplate = options.rangesLi ? $(options.rangesLi) : $('<li></li>');
             for (range in this.ranges) {
-                list += '<li>' + range + '</li>';
+                var el = liTemplate.clone();
+                el.html(range);
+                list.append(el);
             }
-            list += '<li>' + this.locale.customRangeLabel + '</li>';
-            list += '</ul>';
+            list.append(liTemplate.clone().html(this.locale.customRangeLabel));
             this.container.find('.ranges').prepend(list);
         }
 
