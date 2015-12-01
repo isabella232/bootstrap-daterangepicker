@@ -373,7 +373,7 @@
         this.container.addClass('opens' + this.opens);
 
         //swap the position of the predefined ranges if opens right
-        if (typeof options.ranges !== 'undefined' && this.opens == 'right') {
+        if (typeof options.ranges !== 'undefined' && this.opens == 'right' && !options.doNotMoveRanges) {
             var ranges = this.container.find('.ranges');
             var html = ranges.clone();
             ranges.remove();
