@@ -336,7 +336,7 @@
                 el.innerHTML(range);
                 list.append(el);
             }
-            list.append(liTemplate.clone().html(this.locale.customRangeLabel));
+            list.append(this.rangesLiTemplate.clone().html(this.locale.customRangeLabel));
             this.container.find('.ranges').prepend(list);
         }
 
