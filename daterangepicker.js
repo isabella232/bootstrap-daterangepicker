@@ -97,6 +97,8 @@
         //data-api options will be overwritten with custom javascript options
         options = $.extend(this.element.data(), options);
 
+        this.activeClass == (options.activeClass && options.activeClass.length) ? options.activeClass : this.activeClass;
+
         //html template for the picker UI
         if (typeof options.template !== 'string')
             options.template = '<div class="daterangepicker dropdown-menu">' +
