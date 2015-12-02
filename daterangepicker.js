@@ -329,11 +329,10 @@
                 this.ranges[rangeHtml] = [start, end];
             }
 
-            var list = this.rangesUlTemplate;
-
+            var list = this.rangesUlTemplate.clone();
             for (range in this.ranges) {
                 var el = this.rangesLiTemplate.clone();
-                el.innerHTML(range);
+                el.html(range);
                 list.append(el);
             }
             list.append(this.rangesLiTemplate.clone().html(this.locale.customRangeLabel));
