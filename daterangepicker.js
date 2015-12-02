@@ -132,6 +132,9 @@
         this.parentEl = (options.parentEl && $(options.parentEl).length) ? $(options.parentEl) : $(this.parentEl);
         this.container = $(options.template).appendTo(this.parentEl).hide();
 
+        this.rangesUlTemplate = (typeof options.rangesUl === 'string') ? $(options.rangesUl) : $('<ul></ul>');
+        this.rangesLiTemplate = (typeof options.rangesLi === 'string') ? $(options.rangesLi) : $('<li></li>');
+
         //
         // handle all the possible options overriding defaults
         //
@@ -326,11 +329,11 @@
                 this.ranges[rangeHtml] = [start, end];
             }
 
-            var list = options.rangesUl ? $(options.rangesUl) : $('<ul></ul>');
-            var liTemplate = options.rangesLi ? $(options.rangesLi) : $('<li></li>');
-            for (range in options.ranges) {
-                var el = liTemplate.clone();
-                el.html(range);
+            var list = this.rangesUlTemplate;
+
+            for (range in this.ranges) {
+                var el = this.rangesLiTemplate.clone();
+                el.innerHTML(range);
                 list.append(el);
             }
             list.append(liTemplate.clone().html(this.locale.customRangeLabel));
