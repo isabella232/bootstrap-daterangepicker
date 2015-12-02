@@ -328,7 +328,7 @@
 
             var list = options.rangesUl ? $(options.rangesUl) : $('<ul></ul>');
             var liTemplate = options.rangesLi ? $(options.rangesLi) : $('<li></li>');
-            for (range in this.ranges) {
+            for (range in options.ranges) {
                 var el = liTemplate.clone();
                 el.html(range);
                 list.append(el);
