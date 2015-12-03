@@ -57,6 +57,7 @@
         this.autoUpdateInput = true;
         this.ranges = {};
         this.activeClass = 'active';
+        this.calendarsAlwaysVisible = false || options.calendarsAlwaysVisible;
 
         this.opens = 'right';
         if (this.element.hasClass('pull-right'))
@@ -1168,7 +1169,9 @@
                     this.endDate.endOf('day');
                 }
 
-                this.hideCalendars();
+                if (!this.calendarsAlwaysVisible) {
+                  this.hideCalendars();
+                }
                 this.clickApply();
             }
         },
