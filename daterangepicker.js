@@ -374,7 +374,7 @@
             }
         }
 
-        if (typeof options.ranges === 'undefined' && !this.singleDatePicker) {
+        if (typeof options.ranges === 'undefined' && !this.singleDatePicker || this.calendarsAlwaysVisible) {
             this.container.addClass('show-calendar');
         }
 
