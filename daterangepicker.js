@@ -1146,7 +1146,7 @@
                 if (!this.calendarsAlwaysVisible) {
                   this.hideCalendars();
                 }
-                this.clickApply();
+                // this.clickApply();
             }
         },
 
