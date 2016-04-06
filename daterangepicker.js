@@ -8,7 +8,6 @@
 */
 
 (function(root, factory) {
-
   if (typeof define === 'function' && define.amd) {
     define(['moment', 'jquery', 'exports'], function(momentjs, $, exports) {
       root.daterangepicker = factory(root, exports, momentjs, $);
@@ -57,8 +56,8 @@
         this.autoUpdateInput = true;
         this.ranges = {};
         this.activeClass = 'is-active';
-        this.rangeActiveClass = 'tab-active';
-        this.calendarsAlwaysVisible = false || options.calendarsAlwaysVisible;
+        this.rangeActiveClass = 'is-active';
+        this.calendarsAlwaysVisible = options.calendarsAlwaysVisible || false;
 
         this.opens = 'right';
         if (this.element.hasClass('pull-right'))
@@ -379,7 +378,6 @@
             .on('click.daterangepicker', '.prev', $.proxy(this.clickPrev, this))
             .on('click.daterangepicker', '.next', $.proxy(this.clickNext, this))
             .on('click.daterangepicker', 'td.available', $.proxy(this.clickDate, this))
-            .on('mouseenter.daterangepicker', 'td.available', $.proxy(this.hoverDate, this))
             .on('mouseleave.daterangepicker', 'td.available', $.proxy(this.updateFormInputs, this))
             .on('change.daterangepicker', 'select.yearselect', $.proxy(this.monthOrYearChanged, this))
             .on('change.daterangepicker', 'select.monthselect', $.proxy(this.monthOrYearChanged, this))
@@ -390,7 +388,6 @@
 
         this.container.find('.js-daterangepicker-ranges')
             .on('click.daterangepicker', 'li', $.proxy(this.clickRange, this))
-            .on('mouseenter.daterangepicker', 'li', $.proxy(this.hoverRange, this))
             .on('mouseleave.daterangepicker', 'li', $.proxy(this.updateFormInputs, this));
 
         this.container
@@ -654,7 +651,7 @@
 
             }
 
-            //make the calendar object available to hoverDate/clickDate
+            //make the calendar object available to clickDate
             if (side == 'left') {
                 this.leftCalendar.calendar = calendar;
             } else {
@@ -1111,23 +1108,6 @@
             this.element.trigger('hideCalendar.daterangepicker', this);
         },
 
-        hoverRange: function(e) {
-
-            //ignore mouse movements while an above-calendar text input has focus
-            if (this.container.find('input[name=daterangepicker_start]').is(":focus") || this.container.find('input[name=daterangepicker_end]').is(":focus"))
-                return;
-
-            var label = e.target.innerHTML;
-            if (label == this.locale.customRangeLabel) {
-                this.updateView();
-            } else {
-                var dates = this.ranges[label];
-                this.container.find('input[name=daterangepicker_start]').val(dates[0].format(this.locale.format));
-                this.container.find('input[name=daterangepicker_end]').val(dates[1].format(this.locale.format));
-            }
-
-        },
-
         clickRange: function(e) {
             var label = e.target.innerHTML;
             this.chosenLabel = label;
@@ -1146,7 +1126,7 @@
                 if (!this.calendarsAlwaysVisible) {
                   this.hideCalendars();
                 }
-                // this.clickApply();
+                this.updateCalendars();
             }
         },
 
@@ -1172,55 +1152,6 @@
                     this.leftCalendar.month.add(1, 'month');
             }
             this.updateCalendars();
-        },
-
-        hoverDate: function(e) {
-
-            //ignore mouse movements while an above-calendar text input has focus
-            if (this.container.find('input[name=daterangepicker_start]').is(":focus") || this.container.find('input[name=daterangepicker_end]').is(":focus"))
-                return;
-
-            //ignore dates that can't be selected
-            if (!$(e.target).hasClass('available')) return;
-
-            //have the text inputs above calendars reflect the date being hovered over
-            var title = $(e.target).attr('data-title');
-            var row = title.substr(1, 1);
-            var col = title.substr(3, 1);
-            var cal = $(e.target).parents('.js-daterangepicker-calendar');
-            var date = cal.hasClass('js-daterangepicker-left') ? this.leftCalendar.calendar[row][col] : this.rightCalendar.calendar[row][col];
-
-            if (this.endDate) {
-                this.container.find('input[name=daterangepicker_start]').val(date.format(this.locale.format));
-            } else {
-                this.container.find('input[name=daterangepicker_end]').val(date.format(this.locale.format));
-            }
-
-            //highlight the dates between the start date and the date being hovered as a potential end date
-            var leftCalendar = this.leftCalendar;
-            var rightCalendar = this.rightCalendar;
-            var startDate = this.startDate;
-            if (!this.endDate) {
-                this.container.find('.calendar td').each(function(index, el) {
-
-                    //skip week numbers, only look at dates
-                    if ($(el).hasClass('week')) return;
-
-                    var title = $(el).attr('data-title');
-                    var row = title.substr(1, 1);
-                    var col = title.substr(3, 1);
-                    var cal = $(el).parents('.js-daterangepicker-calendar');
-                    var dt = cal.hasClass('js-daterangepicker-left') ? leftCalendar.calendar[row][col] : rightCalendar.calendar[row][col];
-
-                    if (dt.isAfter(startDate) && dt.isBefore(date)) {
-                        $(el).addClass('in-range');
-                    } else {
-                        $(el).removeClass('in-range');
-                    }
-
-                });
-            }
-
         },
 
         clickDate: function(e) {
