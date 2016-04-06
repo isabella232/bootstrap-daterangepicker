@@ -1238,9 +1238,9 @@
             var year = startDate.year();
 
             if (!isLeft) {
-                if (year < startDate.year() || (year == startDate.year() && month < startDate.month())) {
-                    month = startDate.month();
-                    year = startDate.year();
+                if (year < this.startDate.year() || (year == this.startDate.year() && month < this.startDate.month())) {
+                    month = this.startDate.month();
+                    year = this.startDate.year();
                 }
             }
 
@@ -1257,13 +1257,14 @@
                     year = this.maxDate.year();
                 }
             }
-            // add one to final month to put calendar on the left side
             if (isLeft) {
-                this.leftCalendar.month.month(month + 1).year(year);
+                this.leftCalendar.month.month(month).year(year);
+                this.leftCalendar.month = this.leftCalendar.month.clone().add(1, 'month');
                 if (this.linkedCalendars)
                     this.rightCalendar.month = this.leftCalendar.month.clone().add(1, 'month');
             } else {
-                this.rightCalendar.month.month(month + 1).year(year);
+                this.rightCalendar.month.month(month).year(year);
+                this.rightCalendar.month = this.rightCalendar.month.clone().add(1, 'month');
                 if (this.linkedCalendars)
                     this.leftCalendar.month = this.rightCalendar.month.clone().subtract(1, 'month');
             }
