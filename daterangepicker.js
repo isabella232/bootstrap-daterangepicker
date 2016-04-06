@@ -379,8 +379,6 @@
             .on('click.daterangepicker', '.next', $.proxy(this.clickNext, this))
             .on('click.daterangepicker', 'td.available', $.proxy(this.clickDate, this))
             .on('mouseleave.daterangepicker', 'td.available', $.proxy(this.updateFormInputs, this))
-            .on('change.daterangepicker', 'select.yearselect', $.proxy(this.monthOrYearChanged, this))
-            .on('change.daterangepicker', 'select.monthselect', $.proxy(this.monthOrYearChanged, this))
             .on('change.daterangepicker', 'select.hourselect,select.minuteselect,select.secondselect,select.ampmselect', $.proxy(this.timeChanged, this))
             .on('click.daterangepicker', '.daterangepicker_input input', $.proxy(this.showCalendars, this))
             //.on('keyup.daterangepicker', '.daterangepicker_input input', $.proxy(this.formInputsChanged, this))
@@ -388,7 +386,6 @@
 
         this.container.find('.js-daterangepicker-ranges')
             .on('click.daterangepicker', 'li', $.proxy(this.clickRange, this))
-            .on('mouseleave.daterangepicker', 'li', $.proxy(this.updateFormInputs, this));
 
         this.container
             .on('click.daterangepicker', '.js-daterangepicker-apply-btn', $.proxy(this.clickApply, this))
@@ -1126,7 +1123,9 @@
                 if (!this.calendarsAlwaysVisible) {
                   this.hideCalendars();
                 }
+                this.updateFormInputs();
                 this.updateCalendars();
+                this.monthOrYearChanged(e, this.startDate, this.endDate);
             }
         },
 
@@ -1229,19 +1228,19 @@
             this.element.trigger('cancel.daterangepicker', this);
         },
 
-        monthOrYearChanged: function(e) {
+        monthOrYearChanged: function(e, startDate, endDate) {
             var isLeft = $(e.target).closest('.js-daterangepicker-calendar').hasClass('js-daterangepicker-left'),
                 leftOrRight = isLeft ? 'left' : 'right',
                 cal = this.container.find('.js-daterangepicker-calendar.js-daterangepicker-'+leftOrRight);
 
             // Month must be Number for new moment versions
-            var month = parseInt(cal.find('.monthselect').val(), 10);
-            var year = cal.find('.yearselect').val();
+            var month = startDate.month();
+            var year = startDate.year();
 
             if (!isLeft) {
-                if (year < this.startDate.year() || (year == this.startDate.year() && month < this.startDate.month())) {
-                    month = this.startDate.month();
-                    year = this.startDate.year();
+                if (year < startDate.year() || (year == startDate.year() && month < startDate.month())) {
+                    month = startDate.month();
+                    year = startDate.year();
                 }
             }
 
@@ -1258,13 +1257,13 @@
                     year = this.maxDate.year();
                 }
             }
-
+            // add one to final month to put calendar on the left side
             if (isLeft) {
-                this.leftCalendar.month.month(month).year(year);
+                this.leftCalendar.month.month(month + 1).year(year);
                 if (this.linkedCalendars)
                     this.rightCalendar.month = this.leftCalendar.month.clone().add(1, 'month');
             } else {
-                this.rightCalendar.month.month(month).year(year);
+                this.rightCalendar.month.month(month + 1).year(year);
                 if (this.linkedCalendars)
                     this.leftCalendar.month = this.rightCalendar.month.clone().subtract(1, 'month');
             }
