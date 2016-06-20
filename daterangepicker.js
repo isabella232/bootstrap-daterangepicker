@@ -107,7 +107,7 @@
             throw new Error('Please provide a template')
 
         this.parentEl = (options.parentEl && $(options.parentEl).length) ? $(options.parentEl) : $(this.parentEl);
-        this.container = $(options.template).appendTo(this.parentEl).hide();
+        this.container = $(options.template).appendTo(this.parentEl);
 
         this.rangesUlTemplate = (typeof options.rangesUl === 'string') ? $(options.rangesUl) : $('<ul></ul>');
         this.rangesLiTemplate = (typeof options.rangesLi === 'string') ? $(options.rangesLi) : $('<li></li>');
