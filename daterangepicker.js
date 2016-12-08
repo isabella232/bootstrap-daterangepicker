@@ -73,6 +73,7 @@
 
         this.locale = {
             format: 'MM/DD/YYYY',
+            timeFormat: 'h:mm A',
             separator: ' - ',
             applyLabel: 'Apply',
             cancelLabel: 'Cancel',
@@ -112,6 +113,12 @@
         this.rangesUlTemplate = (typeof options.rangesUl === 'string') ? $(options.rangesUl) : $('<ul></ul>');
         this.rangesLiTemplate = (typeof options.rangesLi === 'string') ? $(options.rangesLi) : $('<li></li>');
 
+        this.showTimeZoneNotification = options.showTimeZoneNotification || false;
+        if (this.showTimeZoneNotification && typeof options.timeZoneNotificationHTML !== 'string') {
+            throw new Error('Please provide a timezone notification template');
+        }
+        this.timeZoneNotificationHTML = (typeof options.timeZoneNotificationHTML === 'string' ? $(options.timeZoneNotificationHTML) : $('<div></div>'));
+
         //
         // handle all the possible options overriding defaults
         //
@@ -120,6 +127,9 @@
 
             if (typeof options.locale.format === 'string')
                 this.locale.format = options.locale.format;
+
+            if (typeof options.locale.timeFormat === 'string')
+                this.locale.format = options.locale.timeFormat;
 
             if (typeof options.locale.separator === 'string')
                 this.locale.separator = options.locale.separator;
@@ -493,6 +503,9 @@
             } else {
                 this.container.find('input[name="daterangepicker_end"]').addClass(this.activeClass);
                 this.container.find('input[name="daterangepicker_start"]').removeClass(this.activeClass);
+            }
+            if (this.showTimeZoneNotification) {
+                this.renderTimeZoneNotification();
             }
             this.updateMonthsInView();
             this.updateCalendars();
@@ -944,6 +957,14 @@
 
         },
 
+        renderTimeZoneNotification: function() {
+            if (!this.timeZoneNotificationHTML) {
+                return;
+            }
+
+            this.container.find('.timezone-notification').html(this.timeZoneNotificationHTML);
+        },
+
         updateFormInputs: function() {
 
             //ignore mouse movements while an above-calendar text input has focus
@@ -953,6 +974,13 @@
             this.container.find('input[name=daterangepicker_start]').val(this.startDate.format(this.locale.format));
             if (this.endDate)
                 this.container.find('input[name=daterangepicker_end]').val(this.endDate.format(this.locale.format));
+
+            if (this.container.find('input[name=daterangepicker_time_start]')) {
+                this.container.find('input[name=daterangepicker_time_start]').val(this.startDate.format(this.locale.timeFormat));
+            }
+            if (this.container.find('input[name=daterangepicker_time_end]') && this.endDate) {
+                this.container.find('input[name=daterangepicker_time_end]').val(this.endDate.format(this.locale.timeFormat));
+            }
 
             if (this.singleDatePicker || (this.endDate && (this.startDate.isBefore(this.endDate) || this.startDate.isSame(this.endDate)))) {
                 this.container.find('.js-daterangepicker-apply-btn').removeAttr('disabled');
@@ -1105,11 +1133,28 @@
             this.element.trigger('hideCalendar.daterangepicker', this);
         },
 
+        showTimePicker: function() {
+            this.container.find('.hourselect, .minuteselect, .ampmselect').show();
+            if (this.timePickerSeconds) {
+                this.container.find('.secondselect').show();
+            }
+        },
+
+        hideTimePicker: function() {
+            this.container.find('.hourselect, .minuteselect, .ampmselect').hide();
+            if (this.timePickerSeconds) {
+                this.container.find('.secondselect').hide();
+            }
+        },
+
         clickRange: function(e) {
             var label = e.target.innerHTML;
             this.chosenLabel = label;
             if (label == this.locale.customRangeLabel) {
                 this.showCalendars();
+                if (this.timePicker) {
+                    this.showTimePicker();
+                }
             } else {
                 var dates = this.ranges[label];
                 this.startDate = dates[0];
@@ -1122,6 +1167,9 @@
 
                 if (!this.calendarsAlwaysVisible) {
                   this.hideCalendars();
+                }
+                if (this.timePicker) {
+                    this.hideTimePicker();
                 }
                 this.updateFormInputs();
                 this.updateCalendars();
