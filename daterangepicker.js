@@ -112,6 +112,12 @@
         this.rangesUlTemplate = (typeof options.rangesUl === 'string') ? $(options.rangesUl) : $('<ul></ul>');
         this.rangesLiTemplate = (typeof options.rangesLi === 'string') ? $(options.rangesLi) : $('<li></li>');
 
+        this.showTimeZoneNotification = options.showTimeZoneNotification || false;
+        if (this.showTimeZoneNotification && typeof options.timeZoneNotificationHTML !== 'string') {
+            throw new Error('Please provide a timezone notification template');
+        }
+        this.timeZoneNotificationHTML = (typeof options.timeZoneNotificationHTML === 'string' ? $(options.timeZoneNotificationHTML) : $('<div></div>'));
+
         //
         // handle all the possible options overriding defaults
         //
@@ -493,6 +499,9 @@
             } else {
                 this.container.find('input[name="daterangepicker_end"]').addClass(this.activeClass);
                 this.container.find('input[name="daterangepicker_start"]').removeClass(this.activeClass);
+            }
+            if (this.showTimeZoneNotification) {
+                this.renderTimeZoneNotification();
             }
             this.updateMonthsInView();
             this.updateCalendars();
@@ -944,6 +953,14 @@
 
         },
 
+        renderTimeZoneNotification: function() {
+            if (!this.timeZoneNotificationHTML) {
+                return;
+            }
+
+            this.container.find('.timezone-notification').html(this.timeZoneNotificationHTML);
+        },
+
         updateFormInputs: function() {
 
             //ignore mouse movements while an above-calendar text input has focus
@@ -1110,6 +1127,9 @@
             this.chosenLabel = label;
             if (label == this.locale.customRangeLabel) {
                 this.showCalendars();
+                // Set to beginning of day and end of day for custom daterange.
+                this.setTimeForCustomRange();
+                this.updateCalendars();
             } else {
                 var dates = this.ranges[label];
                 this.startDate = dates[0];
@@ -1205,6 +1225,9 @@
                 if (this.autoApply)
                     this.clickApply();
             }
+
+            // Set to beginning of day and end of day for custom daterange.
+            this.setTimeForCustomRange();
 
             if (this.singleDatePicker) {
                 this.setEndDate(this.startDate);
@@ -1394,6 +1417,14 @@
             this.container.remove();
             this.element.off('.js-daterangepicker');
             this.element.removeData();
+        },
+
+        setTimeForCustomRange: function() {
+            this.setStartDate(this.startDate.startOf('day'));
+            if (this.endDate) {
+                this.setEndDate(this.endDate.endOf('day'));
+            }
+
         }
 
     };
