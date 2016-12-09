@@ -1126,6 +1126,7 @@
             var label = e.target.innerHTML;
             this.chosenLabel = label;
             if (label == this.locale.customRangeLabel) {
+                this.showCalendars();
                 // Set to beginning of day and end of day for custom daterange.
                 this.setTimeForCustomRange();
                 this.updateCalendars();
