@@ -73,7 +73,6 @@
 
         this.locale = {
             format: 'MM/DD/YYYY',
-            timeFormat: 'h:mm A',
             separator: ' - ',
             applyLabel: 'Apply',
             cancelLabel: 'Cancel',
@@ -127,9 +126,6 @@
 
             if (typeof options.locale.format === 'string')
                 this.locale.format = options.locale.format;
-
-            if (typeof options.locale.timeFormat === 'string')
-                this.locale.format = options.locale.timeFormat;
 
             if (typeof options.locale.separator === 'string')
                 this.locale.separator = options.locale.separator;
@@ -975,13 +971,6 @@
             if (this.endDate)
                 this.container.find('input[name=daterangepicker_end]').val(this.endDate.format(this.locale.format));
 
-            if (this.container.find('input[name=daterangepicker_time_start]')) {
-                this.container.find('input[name=daterangepicker_time_start]').val(this.startDate.format(this.locale.timeFormat));
-            }
-            if (this.container.find('input[name=daterangepicker_time_end]') && this.endDate) {
-                this.container.find('input[name=daterangepicker_time_end]').val(this.endDate.format(this.locale.timeFormat));
-            }
-
             if (this.singleDatePicker || (this.endDate && (this.startDate.isBefore(this.endDate) || this.startDate.isSame(this.endDate)))) {
                 this.container.find('.js-daterangepicker-apply-btn').removeAttr('disabled');
             } else {
@@ -1133,28 +1122,13 @@
             this.element.trigger('hideCalendar.daterangepicker', this);
         },
 
-        showTimePicker: function() {
-            this.container.find('.hourselect, .minuteselect, .ampmselect').show();
-            if (this.timePickerSeconds) {
-                this.container.find('.secondselect').show();
-            }
-        },
-
-        hideTimePicker: function() {
-            this.container.find('.hourselect, .minuteselect, .ampmselect').hide();
-            if (this.timePickerSeconds) {
-                this.container.find('.secondselect').hide();
-            }
-        },
-
         clickRange: function(e) {
             var label = e.target.innerHTML;
             this.chosenLabel = label;
             if (label == this.locale.customRangeLabel) {
-                this.showCalendars();
-                if (this.timePicker) {
-                    this.showTimePicker();
-                }
+                // Set to beginning of day and end of day for custom daterange.
+                this.setTimeForCustomRange();
+                this.updateCalendars();
             } else {
                 var dates = this.ranges[label];
                 this.startDate = dates[0];
@@ -1167,9 +1141,6 @@
 
                 if (!this.calendarsAlwaysVisible) {
                   this.hideCalendars();
-                }
-                if (this.timePicker) {
-                    this.hideTimePicker();
                 }
                 this.updateFormInputs();
                 this.updateCalendars();
@@ -1253,6 +1224,9 @@
                 if (this.autoApply)
                     this.clickApply();
             }
+
+            // Set to beginning of day and end of day for custom daterange.
+            this.setTimeForCustomRange();
 
             if (this.singleDatePicker) {
                 this.setEndDate(this.startDate);
@@ -1442,6 +1416,14 @@
             this.container.remove();
             this.element.off('.js-daterangepicker');
             this.element.removeData();
+        },
+
+        setTimeForCustomRange: function() {
+            this.setStartDate(this.startDate.startOf('day'));
+            if (this.endDate) {
+                this.setEndDate(this.endDate.endOf('day'));
+            }
+
         }
 
     };
