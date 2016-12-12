@@ -1132,8 +1132,8 @@
                 this.updateCalendars();
             } else {
                 var dates = this.ranges[label];
-                this.startDate = dates[0];
-                this.endDate = dates[1];
+                this.startDate = dates[0].clone();
+                this.endDate = dates[1].clone();
 
                 if (!this.timePicker) {
                     this.startDate.startOf('day');
@@ -1420,9 +1420,9 @@
         },
 
         setTimeForCustomRange: function() {
-            this.setStartDate(this.startDate.startOf('day'));
+            this.setStartDate(this.startDate.clone().startOf('day'));
             if (this.endDate) {
-                this.setEndDate(this.endDate.endOf('day'));
+                this.setEndDate(this.endDate.clone().endOf('day'));
             }
 
         }
